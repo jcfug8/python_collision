@@ -17,20 +17,26 @@ class Circle:
         self.color = (randint(0,255),randint(0,255),randint(0,255))
         self.screen_width = width
         self.screen_height = height
+        self.area = self.get_area()
 
     def paint(self, surface):
         pygame.draw.circle(surface, self.color, (self.x, self.y), self.radius )
-
+    def get_area(self):
+        return math.pi*self.radius**2
     def move_logic(self, x, y):
 
         if self.x + self.radius >= self.screen_width:
             self.dx *= -1
+            self.x = self.screen_width - self.radius
         if self.x - self.radius <= 0:
             self.dx *= -1
+            self.x = self.radius
         if self.y + self.radius >= self.screen_height:
             self.dy *= -1
+            self.y = self.screen_height - self.radius
         if self.y - self.radius <= 0:
             self.dy *= -1
+            self.y = self.radius
 
         self.x += self.dx
         self.y += self.dy
@@ -41,10 +47,15 @@ class Circle:
         self.bottom = self.y + self.radius
         self.left = self.x - self.radius
         self.right = self.x + self.radius
+    def rebound(self, shape):
+        temp_dx, temp_dy = self.dx, self.dy
+        self.dx, self.dy = shape.dx, shape.dy
+        shape.dx, shape.dy = temp_dx, temp_dy
 
     def collision_logic_c(self, shape):
         if math.sqrt((self.x - shape.x)**2 + (self.y - shape.y)**2) <= self.radius + shape.radius:
             # print("collision")
+            self.rebound(shape)
             return True
         return False
     def collision_logic_p(self, shape):
@@ -64,6 +75,7 @@ class Circle:
                     if temp_y2 < max(y1, y2) and temp_y2 > min(y1, y2):
                         temp_points["y2"] = temp_y2
                     if len(temp_points) > 0:
+                        self.rebound(shape)
                         return True
 
             elif y1 - y2 == 0:
@@ -76,6 +88,7 @@ class Circle:
                     if temp_x2 < max(x1, x2) and temp_x2 > min(x1, x2):
                         temp_points["x2"] = temp_x2
                     if len(temp_points) > 0:
+                        self.rebound(shape)
                         return True
             else:
                 px = x2-x1
@@ -92,6 +105,7 @@ class Circle:
                 dy = y - self.y
                 dist = math.sqrt(dx*dx + dy*dy)
                 if dist <= self.radius:
+                    self.rebound(shape)
                     return True
 
             x1, y1 = x2 , y2

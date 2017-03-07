@@ -47,14 +47,9 @@ class PygameStarter(game_mouse.Game):
                     print("boom-c")
         for r in self.rectangles:
             r.move_logic()
-            for c in self.circles:
-                if r.collision_logic_c(c):
-                        print("boom-r")
         for p in self.polygons:
             p.move_logic()
-            for c in self.circles:
-                if p.collision_logic_c(c):
-                        print("boom-p")
+
         return
 
     def paint(self, surface):
